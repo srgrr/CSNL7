@@ -2,7 +2,7 @@ import sys
 
 def parse_arguments():
   import argparse
-  parser = argparse.ArgumentParser(description='Generate random graph')
+  parser = argparse.ArgumentParser(description='Simulate SIS process')
   parser.add_argument(
     'filename', type = str, help = 'Path to input file'
   )
@@ -21,6 +21,10 @@ def parse_arguments():
   parser.add_argument(
     '--max_iterations', '-m', type = int, default = 10**5,
     help = 'Maximum iterations of the SIS process'
+  )
+  parser.add_argument(
+    '--plot_ratio', '-r', action = 'store_true',
+    help = 'Plot results'
   )
   return parser.parse_args()
 
@@ -47,9 +51,11 @@ def run_simulation(g, args, expname):
   initial_infected = sample(list(range(n)), initial_amount)
   for u in initial_infected:
     infected[u] = True
-  history = [initial_amount / float(n)]
-  diameter_x = []
-  diameter = []
+  
+  if args.plot_ratio:
+    history = [initial_amount / float(n)]
+
+  epidemic = True
 
   for it in range(args.max_iterations):
     from copy import deepcopy
@@ -66,21 +72,29 @@ def run_simulation(g, args, expname):
       if old_infected[i] and random() <= args.gamma:
         infected[i] = False
 
-    history.append(
-      1.0 * len([x for x in infected if x]) / float(n)
-    )
+    infected_amount = len([x for x in infected if x])
 
-    if history[-1] == 0:
-      print('Infection has been eradicated at iteration %d'%(it+1))
+    if args.plot_ratio:
+      history.append(
+        1.0 * infected_amount / float(n)
+      )
+
+    if infected_amount == 0:
+      epidemic = False
       break
 
-  import matplotlib.pyplot as plt
-  plt.figure('Infected ratio vs timestep')
-  plt.xlabel('Timestep')
-  plt.ylabel('Infected ratio')
-  plt.plot(history)
-  # plt.scatter(list(range(len(history))), history)
-  plt.savefig('%s_infected_ratio.png'%expname)
+  if epidemic:
+    print('Infection remained through all the simulation')
+  else:
+    print('Infection was eradicated in iteration %d'%it)
+
+  if args.plot_ratio:
+    import matplotlib.pyplot as plt
+    plt.figure('Infected ratio vs timestep')
+    plt.xlabel('Timestep')
+    plt.ylabel('Infected ratio')
+    plt.plot(history)
+    plt.savefig('%s_infected_ratio.png'%expname)
 
 def main():
   args = parse_arguments()

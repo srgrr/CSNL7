@@ -55,7 +55,7 @@ def generate_complete(args):
     - np.eye(args.vertices)
 
 def print_graph(g):
-  print('%d %.04f'%(g.shape[0], np.max(np.linalg.eig(g)[0])))
+  print('%d %.04f'%(g.shape[0], np.linalg.norm(np.max(np.linalg.eig(g)[0]))))
   for row in g:
     print(' '.join(str(x) for x in row))
 

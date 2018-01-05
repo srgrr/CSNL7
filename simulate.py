@@ -19,7 +19,7 @@ def parse_arguments():
     help = 'Fraction of initially infected nodes'
   )
   parser.add_argument(
-    '--max_iterations', '-m', type = int, default = 10000,
+    '--max_iterations', '-m', type = int, default = 10**5,
     help = 'Maximum iterations of the SIS process'
   )
   return parser.parse_args()
@@ -44,11 +44,14 @@ def run_simulation(g, args, expname):
   print('Initial amount: %d' % initial_amount)
   infected = [False] * n
   from random import sample
-  for u in sample(list(range(n)), initial_amount):
+  initial_infected = sample(list(range(n)), initial_amount)
+  for u in initial_infected:
     infected[u] = True
   history = [initial_amount / float(n)]
+  diameter_x = []
+  diameter = []
 
-  for _ in range(args.max_iterations):
+  for it in range(args.max_iterations):
     from copy import deepcopy
     from random import random
     old_infected = deepcopy(infected)
@@ -68,7 +71,7 @@ def run_simulation(g, args, expname):
     )
 
     if history[-1] == 0:
-      print('Infection has been eradicated at iteration %d'%(_+1))
+      print('Infection has been eradicated at iteration %d'%(it+1))
       break
 
   import matplotlib.pyplot as plt
@@ -76,8 +79,8 @@ def run_simulation(g, args, expname):
   plt.xlabel('Timestep')
   plt.ylabel('Infected ratio')
   plt.plot(history)
-  plt.scatter(list(range(len(history))), history)
-  plt.savefig('%s.png'%expname)
+  # plt.scatter(list(range(len(history))), history)
+  plt.savefig('%s_infected_ratio.png'%expname)
 
 def main():
   args = parse_arguments()

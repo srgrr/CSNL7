@@ -19,7 +19,7 @@ def parse_arguments():
     help = 'Fraction of initially infected nodes'
   )
   parser.add_argument(
-    '--max_iterations', '-m', type = int, default = 10**5,
+    '--max_iterations', '-m', type = int, default = 10**4,
     help = 'Maximum iterations of the SIS process'
   )
   parser.add_argument(

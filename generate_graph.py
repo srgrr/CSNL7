@@ -64,6 +64,8 @@ def store_degseq(g, outp):
     plt.figure('Degree sequence')
     degseq = [np.sum(x) for x in g]
     plt.hist(degseq)
+    plt.xlabel('Degree')
+    plt.ylabel('Frequency')
     plt.savefig('%s.png'%outp)
 
 def main():

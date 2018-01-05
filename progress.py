@@ -34,7 +34,7 @@ def simulate(args, beta, gamma):
   ret = 0
   for i in range(args.reps):
     output = check_output( \
-      ['python', 'simulate.py', args.filename, '--beta', str(beta), '--gamma', str(gamma), '--max_iterations', '100'] \
+      ['python', 'simulate.py', args.filename, '--beta', str(beta), '--gamma', str(gamma), '--max_iterations', '1000'] \
     ).decode('utf-8')
     if not 'eradicated' in output:
       ret += 1
@@ -50,13 +50,17 @@ def main():
   plt.ylabel('Epidemic rate')
   beta = 0.00
   plotx, ploty = [], []
-  while beta <= lambda1 + 0.3:
+  one = 0
+  while beta <= 1.0 and one < 3:
     plotx.append(beta / 0.9)
     ploty.append(simulate(args, beta, 0.9))
+    if ploty[-1]: 
+      one += 1
     beta += args.stepsize
   plt.plot(plotx, ploty, color = 'blue')
-  plt.ylim([0.0, 1.05])
-  plt.plot([lambda1, lambda1], [0.0, 1.05], color = 'red')
+  plt.scatter(plotx, ploty)
+  plt.ylim([-0.05, 1.05])
+  plt.plot([lambda1, lambda1], [-0.05, 1.05], color = 'red')
   plt.savefig('%s_epidemic.png'%args.filename)
 
 if __name__ == "__main__":
